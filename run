@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 
-# ~/.minecraft-plugin-template/<env>-config
+# ~/.minecraft-plugin-template/<env>-config needs to exist and contain settings like the following
 #SERVER_PATH=/server/minecraft/server1
 #SERVER_LOGIN=minecraft@192.168.1.11
-#SCP_COMMAND_OPTIONS="-i ~/.ssh/paulie"
+#SCP_COMMAND_OPTIONS="-i ~/.ssh/minecraft"
+#MAC=00:1d:09:40:b5:5b
+
+
+# Set up
+# SSH/SCP should be configured to be used without interactive passwords
 
 me="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename "$0")"
 
 case "$1" in
 
-'deploy')
+# Server commands
+#   example use:
+#     ./run server test deploy       <- copy jar file to test server
+#     ./run server test wake         <- wake test server from suspended state
+
+'server')
 
   if [ -z "$2" ]; then
     echo "Target environment not specified"
@@ -17,15 +27,45 @@ case "$1" in
     CONFIG_FILE=~/.minecraft-plugin-template/$2-config
     echo "Deploying to test server using configuration from $CONFIG_FILE"
     source "$CONFIG_FILE"
-    scp $SCP_COMMAND_OPTIONS build/libs/minecraft-plugin-template-0.0.1.jar $SERVER_LOGIN:$SERVER_PATH/plugins/
+
+    if [ -z "$3" ]; then
+      echo "Command not specified"
+    else
+
+          case "$3" in
+
+            'deploy')
+               scp $SCP_COMMAND_OPTIONS build/libs/minecraft-plugin-template-0.0.1.jar $SERVER_LOGIN:$SERVER_PATH/plugins/
+            ;;
+
+            'wake')
+               wakeonlan $MAC
+            ;;
+
+            *)
+              echo ""
+              echo "Valid commands are:"
+              echo ""
+              echo "deploy"
+              echo "wake"
+
+          esac
+
+    fi
   fi
 
   ;;
+
+# Build commands
+#   example use:
+#     ./run jar       <- build jar file
 
 'jar')
   echo "Building jar"
   ./gradlew jar
   ;;
+
+# Help
 
 *)
   echo ""
@@ -33,9 +73,14 @@ case "$1" in
   echo ""
   echo "The following commands are available"
   echo ""
-  echo "  deploy <env>"
-  echo "                  Deploys the jar file to the specified environment."
-  echo "                  This requires the ~/.minecraft-plugin-template/<env>-config file to exist with appropriate settings."
+  echo "  server <env> <action>"
+  echo ""
+  echo "                  <env>     - name of server"
+  echo "                    This requires the ~/.minecraft-plugin-template/<env>-config file to exist with appropriate settings."
+  echo ""
+  echo "                  <action> can be one of"
+  echo "                    * deploy - Deploys the jar file to the specified environment."
+  echo "                    * wake   - wake from suspend mode"
   echo ""
   echo "  jar"
   echo "                  Builds the jar file."
