@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# ~/.minecraft-plugin-template/<env>-config
 #SERVER_PATH=/server/minecraft/server1
 #SERVER_LOGIN=minecraft@192.168.1.11
 #SCP_COMMAND_OPTIONS="-i ~/.ssh/paulie"
@@ -13,21 +14,12 @@ case "$1" in
   if [ -z "$2" ]; then
     echo "Target environment not specified"
   else
-    CONFIG_FILE="~/.minecraft-plugin-template/$2-config"
+    CONFIG_FILE=~/.minecraft-plugin-template/$2-config
     echo "Deploying to test server using configuration from $CONFIG_FILE"
-    source $CONFIG_FILE
-    source $me deploy
+    source "$CONFIG_FILE"
+    scp $SCP_COMMAND_OPTIONS build/libs/minecraft-plugin-template-0.0.1.jar $SERVER_LOGIN:$SERVER_PATH/plugins/
   fi
-  ;;
 
-'deploy:prod')
-  echo "Deploying to production server"
-  source ~/.minecraft-plugin-template/prod-config
-  source $me deploy
-  ;;
-
-'deploy')
-  scp $SCP_COMMAND_OPTIONS build/libs/minecraft-plugin-template-0.0.1.jar $SERVER_LOGIN:$SERVER_PATH/plugins/
   ;;
 
 'jar')
@@ -36,6 +28,18 @@ case "$1" in
   ;;
 
 *)
+  echo ""
   echo "Command not found"
+  echo ""
+  echo "The following commands are available"
+  echo ""
+  echo "  deploy <env>"
+  echo "                  Deploys the jar file to the specified environment."
+  echo "                  This requires the ~/.minecraft-plugin-template/<env>-config file to exist with appropriate settings."
+  echo ""
+  echo "  jar"
+  echo "                  Builds the jar file."
+  echo ""
+
   ;;
 esac

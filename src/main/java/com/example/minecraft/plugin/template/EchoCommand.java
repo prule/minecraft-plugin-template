@@ -15,7 +15,7 @@ public class EchoCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        plugin.getLogger().info("onCommand() Echo "+command + " " + label + " "+Joiner.on(",").join(args) );
-        return false;
+        plugin.getLogger().info("onCommand() Echo " + command + " " + label + " " + Joiner.on(",").join(args));
+        return true;
     }
 }
