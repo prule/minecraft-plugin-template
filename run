@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+#SERVER_PATH=/server/minecraft/server1
+#SERVER_LOGIN=minecraft@192.168.1.11
+#SCP_COMMAND_OPTIONS="-i ~/.ssh/paulie"
+
+me="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/$(basename "$0")"
+
+case "$1" in
+
+'deploy')
+
+  if [ -z "$2" ]; then
+    echo "Target environment not specified"
+  else
+    CONFIG_FILE="~/.minecraft-plugin-template/$2-config"
+    echo "Deploying to test server using configuration from $CONFIG_FILE"
+    source $CONFIG_FILE
+    source $me deploy
+  fi
+  ;;
+
+'deploy:prod')
+  echo "Deploying to production server"
+  source ~/.minecraft-plugin-template/prod-config
+  source $me deploy
+  ;;
+
+'deploy')
+  scp $SCP_COMMAND_OPTIONS build/libs/minecraft-plugin-template-0.0.1.jar $SERVER_LOGIN:$SERVER_PATH/plugins/
+  ;;
+
+'jar')
+  echo "Building jar"
+  ./gradlew jar
+  ;;
+
+*)
+  echo "Command not found"
+  ;;
+esac
