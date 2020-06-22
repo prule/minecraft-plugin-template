@@ -1,0 +1,10 @@
+name: MinecraftPluginTemplate
+main: com.example.minecraft.plugin.template.Main
+version: 0.0.1
+
+commands:
+  echo:
+    description: Logs the provided message.
+    usage: /echo [message]
+    permission: com.example.minecraft.plugin.template.basic
+    permission-message: You don't have basic

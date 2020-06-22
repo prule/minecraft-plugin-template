@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url "https://hub.spigotmc.org/nexus/content/repositories/public/"
+    }
+}
+
+dependencies {
+    compileOnly "org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT"
+}
